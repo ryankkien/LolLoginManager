@@ -3,6 +3,7 @@ import os
 import subprocess
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QListWidget, QMessageBox
 from PyQt5.QtCore import Qt
+from pyautogui import locateOnScreen, click, write, press
 
 class LeagueLoginManager(QWidget):
     def __init__(self):
@@ -103,18 +104,35 @@ class LeagueLoginManager(QWidget):
             name = current_item.text()
             account = self.accounts[name]
             
-            # Replace this with the actual path to your League of Legends client
-            lol_path = r"C:\Riot Games\League of Legends\LeagueClient.exe"
-            
-            cmd = f'"{lol_path}" --username {account["username"]} --password {account["password"]}'
-            
-            subprocess.Popen(cmd, shell=True)
-            QMessageBox.information(self, "Login", f"Logging in as {account['username']}...")
+            # Locate the username field
+            username_field = locateOnScreen('username_field.png', confidence=0.8)
+            if username_field:
+                click(username_field)
+                write(account["username"])
+            else:
+                QMessageBox.warning(self, "Error", "Couldn't find username field. Is the client open?")
+                return
+
+            # Locate the password field
+            password_field = locateOnScreen('password_field.png', confidence=0.8)
+            if password_field:
+                click(password_field)
+                write(account["password"])
+            else:
+                QMessageBox.warning(self, "Error", "Couldn't find password field. Is the client open?")
+                return
+
+            # Locate and click the login button
+            login_button = locateOnScreen('login_button.png', confidence=0.8)
+            if login_button:
+                click(login_button)
+                QMessageBox.information(self, "Login", f"Credentials filled for {account['username']}. Click login to proceed.")
+            else:
+                QMessageBox.warning(self, "Error", "Couldn't find login button. Is the client open?")
         else:
             QMessageBox.warning(self, "Error", "Please select an account to login.")
 
-if __name__ == "__main__":
-    app = QApplication([])
-    manager = LeagueLoginManager()
-    manager.show()
-    app.exec_()
+app = QApplication([])
+manager = LeagueLoginManager()
+manager.show()
+app.exec_()
