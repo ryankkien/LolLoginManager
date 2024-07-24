@@ -4,6 +4,10 @@ import subprocess
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QListWidget, QMessageBox
 from PyQt5.QtCore import Qt
 from pyautogui import locateOnScreen, click, write, press
+import win32gui
+import win32con
+
+
 
 class LeagueLoginManager(QWidget):
     def __init__(self):
@@ -99,13 +103,16 @@ class LeagueLoginManager(QWidget):
             QMessageBox.warning(self, "Error", "Please select an account to remove.")
 
     def login(self):
+        # After clicking the login button:
+        hwnd = win32gui.GetForegroundWindow()
+        win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
         current_item = self.account_list.currentItem()
         if current_item:
             name = current_item.text()
             account = self.accounts[name]
             
             # Locate the username field
-            username_field = locateOnScreen('username_field.png', confidence=0.5)
+            username_field = locateOnScreen('username_field.png', confidence=0.95)
             if username_field:
                 click(username_field)
                 write(account["username"])
@@ -114,7 +121,7 @@ class LeagueLoginManager(QWidget):
                 return
 
             # Locate the password field
-            password_field = locateOnScreen('password_field.png', confidence=0.5)
+            password_field = locateOnScreen('password_field.png', confidence=0.95)
             if password_field:
                 click(password_field)
                 write(account["password"])
@@ -123,7 +130,7 @@ class LeagueLoginManager(QWidget):
                 return
 
             # Locate and click the login button
-            login_button = locateOnScreen('login_button.png', confidence=0.8)
+            login_button = locateOnScreen('login_button.png', confidence=0.95)
             if login_button:
                 click(login_button)
                 QMessageBox.information(self, "Login", f"Credentials filled for {account['username']}. Click login to proceed.")
