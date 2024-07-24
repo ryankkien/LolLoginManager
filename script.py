@@ -105,7 +105,7 @@ class LeagueLoginManager(QWidget):
             account = self.accounts[name]
             
             # Locate the username field
-            username_field = locateOnScreen('username_field.png', confidence=0.8)
+            username_field = locateOnScreen('username_field.png', confidence=0.5)
             if username_field:
                 click(username_field)
                 write(account["username"])
@@ -114,7 +114,7 @@ class LeagueLoginManager(QWidget):
                 return
 
             # Locate the password field
-            password_field = locateOnScreen('password_field.png', confidence=0.8)
+            password_field = locateOnScreen('password_field.png', confidence=0.5)
             if password_field:
                 click(password_field)
                 write(account["password"])
